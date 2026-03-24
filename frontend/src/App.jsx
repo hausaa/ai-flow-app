@@ -15,18 +15,17 @@ import InputNode from './components/InputNode';
 import ResultNode from './components/ResultNode';
 import Toolbar from './components/Toolbar';
 
-// ── Custom node types ─────────────────────────────────────────────────────────
 const nodeTypes = {
   inputNode: InputNode,
   resultNode: ResultNode,
 };
 
-// ── API base ──────────────────────────────────────────────────────────────────
+
 const API =
   process.env.REACT_APP_API_URL ||
   (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000');
 
-// ── Initial graph ─────────────────────────────────────────────────────────────
+
 const makeInitialNodes = (onPromptChange) => [
   {
     id: 'input-1',
@@ -54,14 +53,14 @@ const initialEdges = [
   },
 ];
 
-// ── App ───────────────────────────────────────────────────────────────────────
+
 export default function App() {
   const [prompt, setPrompt] = useState('');
   const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(false);
   const [savedFlows, setSavedFlows] = useState([]);
 
-  // Build node data with current state
+
   const buildNodes = useCallback(
     (res = response, load = loading) => [
       {
@@ -88,7 +87,7 @@ export default function App() {
   );
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-  // Sync nodes when prompt/response/loading changes
+  
   useEffect(() => {
     setNodes([
       {
@@ -107,10 +106,10 @@ export default function App() {
         data: { response, loading },
       },
     ]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [prompt, response, loading]);
 
-  // Animate edge when running
+ 
   useEffect(() => {
     setEdges((eds) =>
       eds.map((e) => ({ ...e, animated: loading }))
@@ -122,7 +121,7 @@ export default function App() {
     [setEdges]
   );
 
-  // ── Load history on mount ─────────────────────────────────────────────────
+  
   useEffect(() => {
     fetch(`${API}/api/flows`)
       .then((r) => r.json())
@@ -130,7 +129,7 @@ export default function App() {
       .catch(() => {});
   }, []);
 
-  // ── Run Flow ──────────────────────────────────────────────────────────────
+  
   const handleRun = async () => {
     if (!prompt.trim()) {
       alert('Please enter a prompt first!');
@@ -154,7 +153,7 @@ export default function App() {
     }
   };
 
-  // ── Save Flow ─────────────────────────────────────────────────────────────
+ 
   const handleSave = async () => {
     try {
       const res = await fetch(`${API}/api/save-flow`, {
@@ -164,7 +163,7 @@ export default function App() {
       });
       const data = await res.json();
       if (data.success) {
-        // Refresh history
+        
         const history = await fetch(`${API}/api/flows`).then((r) => r.json());
         if (Array.isArray(history)) setSavedFlows(history);
         return true;
