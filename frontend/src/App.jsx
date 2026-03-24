@@ -20,11 +20,9 @@ const nodeTypes = {
   resultNode: ResultNode,
 };
 
-
 const API =
   process.env.REACT_APP_API_URL ||
   (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000');
-
 
 const makeInitialNodes = (onPromptChange) => [
   {
@@ -53,41 +51,19 @@ const initialEdges = [
   },
 ];
 
-
 export default function App() {
   const [prompt, setPrompt] = useState('');
   const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(false);
   const [savedFlows, setSavedFlows] = useState([]);
 
-
-  const buildNodes = useCallback(
-    (res = response, load = loading) => [
-      {
-        id: 'input-1',
-        type: 'inputNode',
-        position: { x: 80, y: 200 },
-        data: {
-          prompt,
-          onPromptChange: (v) => setPrompt(v),
-        },
-      },
-      {
-        id: 'result-1',
-        type: 'resultNode',
-        position: { x: 520, y: 185 },
-        data: { response: res, loading: load },
-      },
-    ],
-    [prompt, response, loading]
-  );
+  // REMOVED: buildNodes function (it was unused and causing ESLint errors)
 
   const [nodes, setNodes, onNodesChange] = useNodesState(
     makeInitialNodes((v) => setPrompt(v))
   );
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-  
   useEffect(() => {
     setNodes([
       {
@@ -106,10 +82,8 @@ export default function App() {
         data: { response, loading },
       },
     ]);
-    
   }, [prompt, response, loading]);
 
- 
   useEffect(() => {
     setEdges((eds) =>
       eds.map((e) => ({ ...e, animated: loading }))
@@ -121,7 +95,6 @@ export default function App() {
     [setEdges]
   );
 
-  
   useEffect(() => {
     fetch(`${API}/api/flows`)
       .then((r) => r.json())
@@ -129,7 +102,6 @@ export default function App() {
       .catch(() => {});
   }, []);
 
-  
   const handleRun = async () => {
     if (!prompt.trim()) {
       alert('Please enter a prompt first!');
@@ -153,7 +125,6 @@ export default function App() {
     }
   };
 
- 
   const handleSave = async () => {
     try {
       const res = await fetch(`${API}/api/save-flow`, {
@@ -163,7 +134,6 @@ export default function App() {
       });
       const data = await res.json();
       if (data.success) {
-        
         const history = await fetch(`${API}/api/flows`).then((r) => r.json());
         if (Array.isArray(history)) setSavedFlows(history);
         return true;
@@ -223,7 +193,8 @@ export default function App() {
         pointerEvents: 'none',
         zIndex: 5,
       }}>
-        // drag nodes · scroll to zoom · ctrl+scroll to zoom faster
+        {/* FIXED: Comment is now inside curly braces */}
+        {/* drag nodes · scroll to zoom · ctrl+scroll to zoom faster */}
       </div>
     </div>
   );
